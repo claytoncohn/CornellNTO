@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VideoTranscript",
+  "description": "Per-video transcript with diarization, timestamps, nonverbal events, inferred emotions, and screenshare events.",
+  "type": "object",
+  "required": [
+    "video_id",
+    "pipeline_version",
+    "processed_at",
+    "utterances",
+    "screenshare_segments",
+    "warnings"
+  ],
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Matches the video_id in the corresponding metadata.json."
+    },
+    "pipeline_version": {
+      "type": "string"
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "utterances": {
+      "type": "array",
+      "description": "Ordered list of speech utterances. Overlapping utterances are represented as separate records with overlapping time ranges.",
+      "items": {
+        "$ref": "#/definitions/Utterance"
+      }
+    },
+    "screenshare_segments": {
+      "type": "array",
+      "description": "Top-level list of screenshare on/off segments, separate from utterance-level events. Allows screenshare state to be queried independently of speech.",
+      "items": {
+        "$ref": "#/definitions/ScreenshareSegment"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Pipeline-level warnings (e.g. audio dropout, diarization failures, low-confidence regions).",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "definitions": {
+    "Utterance": {
+      "type": "object",
+      "required": [
+        "utterance_id",
+        "speaker_id",
+        "speaker_role",
+        "start_time",
+        "end_time",
+        "text",
+        "asr_confidence",
+        "nonverbal_events",
+        "inferred_emotions",
+        "screenshare_events",
+        "overlaps_with"
+      ],
+      "properties": {
+        "utterance_id": {
+          "type": "string",
+          "description": "Unique identifier for this utterance (e.g. 'utt_0042')."
+        },
+        "speaker_id": {
+          "type": "string",
+          "description": "Stable speaker label assigned by diarization (e.g. 'Speaker_1'). Maps to participant_id in metadata."
+        },
+        "speaker_display_name": {
+          "type": ["string", "null"],
+          "description": "Human-readable name from webcam tile label, if identified."
+        },
+        "speaker_role": {
+          "type": "string",
+          "enum": ["tutor", "student", "unknown"],
+          "description": "Inferred role of the speaker."
+        },
+        "speaker_role_confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "start_time": {
+          "type": "number",
+          "description": "Utterance start time in seconds from video start."
+        },
+        "end_time": {
+          "type": "number",
+          "description": "Utterance end time in seconds from video start."
+        },
+        "duration_seconds": {
+          "type": "number",
+          "description": "end_time minus start_time."
+        },
+        "text": {
+          "type": "string",
+          "description": "ASR transcript of the utterance. Empty string if no speech detected."
+        },
+        "asr_confidence": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Average ASR token confidence for this utterance. Null if not available."
+        },
+        "nonverbal_events": {
+          "type": "array",
+          "description": "Nonverbal actions detected during this utterance window.",
+          "items": {
+            "$ref": "#/definitions/NonverbalEvent"
+          }
+        },
+        "inferred_emotions": {
+          "type": "array",
+          "description": "Inferred emotional states during this utterance. Conservative: only populated when evidence is clear.",
+          "items": {
+            "$ref": "#/definitions/InferredEmotion"
+          }
+        },
+        "screenshare_events": {
+          "type": "array",
+          "description": "Screenshare state changes that occur during this utterance window.",
+          "items": {
+            "$ref": "#/definitions/ScreenshareEvent"
+          }
+        },
+        "overlaps_with": {
+          "type": "array",
+          "description": "List of utterance_ids that overlap in time with this utterance. Empty if no overlap.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NonverbalEvent": {
+      "type": "object",
+      "required": ["event_type", "timestamp", "confidence"],
+      "properties": {
+        "event_type": {
+          "type": "string",
+          "enum": ["pointing", "hand_raise", "nodding", "head_shake", "gesture", "posture_shift", "look_away", "unknown"],
+          "description": "Type of nonverbal action detected."
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Time in seconds when the event was detected."
+        },
+        "duration_seconds": {
+          "type": ["number", "null"],
+          "description": "Estimated duration of the event. Null if instantaneous or not determinable."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Model confidence in this detection."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Optional free-text description of the event."
+        }
+      }
+    },
+    "InferredEmotion": {
+      "type": "object",
+      "required": ["emotion", "confidence", "evidence_type"],
+      "properties": {
+        "emotion": {
+          "type": "string",
+          "enum": ["engaged", "confused", "frustrated", "bored", "excited", "neutral", "unknown"],
+          "description": "Inferred emotional state. Conservative vocabulary — only high-signal states included."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Model confidence. Emotions below threshold in .env are suppressed."
+        },
+        "evidence_type": {
+          "type": "string",
+          "enum": ["facial_expression", "vocal_tone", "speech_content", "combined", "unknown"],
+          "description": "What signal was used to infer the emotion."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Optional explanation of the evidence."
+        }
+      }
+    },
+    "ScreenshareEvent": {
+      "type": "object",
+      "required": ["event_type", "timestamp"],
+      "properties": {
+        "event_type": {
+          "type": "string",
+          "enum": ["share_start", "share_stop", "content_change"],
+          "description": "Type of screenshare transition."
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Time in seconds when the event occurred."
+        },
+        "shared_by": {
+          "type": ["string", "null"],
+          "description": "participant_id of who initiated the share, if determinable."
+        },
+        "content_type": {
+          "type": ["string", "null"],
+          "enum": ["learning_platform", "browser", "document", "whiteboard", "slide_deck", "unknown", null],
+          "description": "Coarse classification of what is being shared."
+        },
+        "platform_name": {
+          "type": ["string", "null"],
+          "description": "Specific platform identified (e.g. 'saga', 'desmos'). Null if not identifiable."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "ScreenshareSegment": {
+      "type": "object",
+      "required": ["segment_id", "start_time", "content_type", "confidence"],
+      "properties": {
+        "segment_id": {
+          "type": "string",
+          "description": "Unique identifier (e.g. 'ss_001')."
+        },
+        "start_time": {
+          "type": "number",
+          "description": "Time in seconds when screenshare became active."
+        },
+        "end_time": {
+          "type": ["number", "null"],
+          "description": "Time in seconds when screenshare stopped. Null if still active at end of video."
+        },
+        "content_type": {
+          "type": "string",
+          "enum": ["learning_platform", "browser", "document", "whiteboard", "slide_deck", "unknown"]
+        },
+        "platform_name": {
+          "type": ["string", "null"],
+          "description": "Specific platform identified (e.g. 'saga', 'desmos')."
+        },
+        "shared_by": {
+          "type": ["string", "null"],
+          "description": "participant_id of the sharer, if determinable."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "notes": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}

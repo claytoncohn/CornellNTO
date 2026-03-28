@@ -1,0 +1,83 @@
+name: CornellNTO
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - ffmpeg
+  - tesseract
+  - llvmlite
+  - numba
+  - librosa
+
+  - pip
+
+  - pip:
+      # PyTorch (MPS-compatible macOS build — standard PyPI wheel includes MPS)
+      - torch
+      - torchaudio
+      - torchvision
+
+      # ASR
+      - openai-whisper
+
+      # Speaker diarization / speech pipelines
+      - pyannote.audio
+      - speechbrain
+
+      # HF ecosystem
+      - transformers
+      - accelerate
+      - datasets
+      - huggingface_hub
+      - sentencepiece
+      - safetensors
+
+      # Core scientific / data stack
+      - numpy
+      - scipy
+      - pandas
+      - scikit-learn
+      - scikit-image
+      - matplotlib
+
+      # Validation / schemas / config
+      - pydantic
+      - jsonschema
+      - pyyaml
+      - python-dotenv
+
+      # CLI / logging / utilities
+      - tqdm
+      - rich
+      - typer
+      - tabulate
+
+      # Video / audio
+      - ffmpeg-python
+      - moviepy
+      - imageio
+      - imageio-ffmpeg
+      - pillow
+      - opencv-python
+
+      # Audio tooling
+      - soundfile
+      - audioread
+
+      # OCR
+      - pytesseract
+
+      # Optional: gesture / pose
+      - mediapipe
+
+      # Export helpers
+      - openpyxl
+      - xlsxwriter
+
+      # Jupyter
+      - jupyterlab
+      - ipykernel
+
+      # General utilities
+      - orjson
+      - more-itertools

@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VideoMetadata",
+  "description": "Per-video metadata extracted by the tutoring session pipeline.",
+  "type": "object",
+  "required": [
+    "video_id",
+    "filename",
+    "pipeline_version",
+    "processed_at",
+    "duration_seconds",
+    "resolution_width",
+    "resolution_height",
+    "frame_rate",
+    "video_codec",
+    "audio_codec",
+    "audio_present",
+    "audio_channels",
+    "audio_sample_rate_hz",
+    "audio_duration_seconds",
+    "audio_video_duration_mismatch",
+    "container_format",
+    "file_size_bytes",
+    "bitrate_kbps",
+    "composite_layout",
+    "screenshare_visible",
+    "participants",
+    "warnings"
+  ],
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "Stable identifier derived from the filename stem (e.g. '1711656206762')."
+    },
+    "filename": {
+      "type": "string",
+      "description": "Original filename of the source video."
+    },
+    "pipeline_version": {
+      "type": "string",
+      "description": "Version string of the processing pipeline."
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when processing was run."
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Total video stream duration in seconds."
+    },
+    "resolution_width": {
+      "type": "integer",
+      "description": "Frame width in pixels."
+    },
+    "resolution_height": {
+      "type": "integer",
+      "description": "Frame height in pixels."
+    },
+    "frame_rate": {
+      "type": "number",
+      "description": "Average video frame rate (fps)."
+    },
+    "video_codec": {
+      "type": "string",
+      "description": "Video codec name (e.g. 'vp8')."
+    },
+    "audio_codec": {
+      "type": "string",
+      "description": "Audio codec name (e.g. 'vorbis')."
+    },
+    "audio_present": {
+      "type": "boolean",
+      "description": "Whether an audio stream was found."
+    },
+    "audio_channels": {
+      "type": "integer",
+      "description": "Number of audio channels (1 = mono, 2 = stereo)."
+    },
+    "audio_sample_rate_hz": {
+      "type": "integer",
+      "description": "Audio sample rate in Hz."
+    },
+    "audio_duration_seconds": {
+      "type": ["number", "null"],
+      "description": "Audio stream duration in seconds. Null if no audio."
+    },
+    "audio_video_duration_mismatch": {
+      "type": "boolean",
+      "description": "True if audio and video stream durations differ by more than 5 seconds."
+    },
+    "audio_video_duration_delta_seconds": {
+      "type": ["number", "null"],
+      "description": "Absolute difference between video and audio durations in seconds. Null if no audio."
+    },
+    "container_format": {
+      "type": "string",
+      "description": "Container format string (e.g. 'matroska,webm')."
+    },
+    "file_size_bytes": {
+      "type": "integer",
+      "description": "File size in bytes."
+    },
+    "bitrate_kbps": {
+      "type": "number",
+      "description": "Overall bitrate in kilobits per second."
+    },
+    "composite_layout": {
+      "type": "object",
+      "description": "Observations about the composite video layout.",
+      "properties": {
+        "layout_type": {
+          "type": "string",
+          "enum": ["screenshare_plus_webcam_strip", "webcam_only", "screenshare_only", "dual_panel_plus_webcam_strip", "unknown"],
+          "description": "Coarse layout classification."
+        },
+        "webcam_strip_position": {
+          "type": "string",
+          "enum": ["bottom", "top", "left", "right", "none", "unknown"]
+        },
+        "screenshare_panel_count": {
+          "type": "integer",
+          "description": "Number of screenshare/work panels observed (0, 1, or 2)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-text observations about the layout."
+        }
+      },
+      "required": ["layout_type"]
+    },
+    "screenshare_visible": {
+      "type": "boolean",
+      "description": "Whether screensharing content was observed at any point in the video."
+    },
+    "screenshare_platform": {
+      "type": ["string", "null"],
+      "description": "Identified platform being shared (e.g. 'saga', 'desmos', 'browser', 'unknown'). Null if no screenshare."
+    },
+    "participants": {
+      "type": "array",
+      "description": "Participants identified from visible name labels in webcam tiles.",
+      "items": {
+        "type": "object",
+        "required": ["participant_id", "display_name", "role", "role_confidence"],
+        "properties": {
+          "participant_id": {
+            "type": "string",
+            "description": "Stable ID assigned by pipeline (e.g. 'Speaker_1')."
+          },
+          "display_name": {
+            "type": ["string", "null"],
+            "description": "Name as it appears on the webcam tile label. Null if not readable."
+          },
+          "role": {
+            "type": "string",
+            "enum": ["tutor", "student", "unknown"],
+            "description": "Inferred role."
+          },
+          "role_confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Confidence in the role assignment."
+          },
+          "role_evidence": {
+            "type": "string",
+            "description": "Brief description of evidence used for role assignment (e.g. 'label reads Tutor')."
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "List of warnings, quality issues, or known limitations for this video.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
