@@ -310,6 +310,15 @@ OCR of webcam tile labels was attempted (Stage 6 reports 119 participant name de
 
 **Why this is the right call:** An incorrect Tutor/Student label is worse than an honest `unknown` label. The prompt explicitly asks for conservative inference, and the evidence base is insufficient to make reliable role assignments in this prototype.
 
+**Note — feasibility given completed diarization:** Now that diarization is working and produces consistent `Speaker_N` labels, the diarization side of the problem is solved. The only remaining blocker is reliable participant name extraction. If OCR targeting were improved (precise tile-region cropping + fuzzy matching against a known-participants list), role assignment would be straightforward:
+
+1. **Extract participant names and roles from webcam tiles** — run Tesseract on individually cropped tile regions (tile geometry is deterministic in the composite layout) and fuzzy-match each result against the known participant list (`Tutor Rivers`, `Eli`, `Sebastian`, `Salvador`) to yield a mapping of `tile_position → {name, role}`.
+2. **Determine the active speaker per diarization turn** — for each `Speaker_N` turn, find the frame(s) sampled during that turn window and identify which webcam tile has the highest motion/visual activity (or simply which tile is highlighted, if the platform marks the active speaker).
+3. **Cross-reference** — assign `speaker_role` and `speaker_display_name` to each `Speaker_N` based on the tile-to-speaker alignment from step 2. Because each participant occupies a fixed tile position in the composite layout, this mapping only needs to be established once per session.
+4. **Apply conservatively** — only propagate the role label to utterances where the alignment confidence is high; retain `"unknown"` for any `Speaker_N` that cannot be reliably matched to a tile.
+
+The bottleneck is entirely OCR quality, not diarization. With a cleaner participant extraction pipeline, role assignment could be added without any changes to the diarization or ASR stages.
+
 ---
 
 ## Step 15: Final Full Pipeline Run — Video 1
