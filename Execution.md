@@ -136,7 +136,7 @@ conda activate CornellNTO
 
 **Issues encountered and fixed:**
 - `str | None` type annotation raised `TypeError` at module load on Python 3.10 — fixed by adding `from __future__ import annotations` at the top of `process_video.py`
-- `conda run -n CornellNTO` resolved to the wrong active environment (`C2STEM_Agent`) — switched to full Python binary path for all invocations
+- `conda run -n CornellNTO` resolved to the wrong active environment (`C2STEM_Agent`; my dissertation research environment) — switched to full Python binary path for all invocations
 - Whisper raised a sparse tensor MPS error — forced `whisper_device = "cpu"` regardless of `DEVICE` setting; documented in log
 - pyannote.audio requires `torch>=2.4` but `2.2.2` is installed — wrapped diarization in try/except; pipeline proceeds with `Speaker_unknown` labels
 
