@@ -146,7 +146,7 @@
         "properties": {
           "participant_id": {
             "type": "string",
-            "description": "Stable ID assigned by pipeline (e.g. 'Speaker_1')."
+            "description": "Stable ID assigned by pipeline (e.g. 'Participant_1')."
           },
           "display_name": {
             "type": ["string", "null"],

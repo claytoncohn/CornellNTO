@@ -101,9 +101,7 @@
         },
         "asr_confidence": {
           "type": ["number", "null"],
-          "minimum": 0.0,
-          "maximum": 1.0,
-          "description": "Average ASR token confidence for this utterance. Null if not available."
+          "description": "Average ASR log-probability for this utterance (Whisper avg_logprob; negative values are normal). Null if not available."
         },
         "nonverbal_events": {
           "type": "array",

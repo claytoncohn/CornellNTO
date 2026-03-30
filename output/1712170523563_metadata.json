@@ -1,0 +1,33 @@
+{
+  "video_id": "1712170523563",
+  "filename": "1712170523563_full_composite.webm",
+  "pipeline_version": "0.1.0",
+  "processed_at": "2026-03-29T23:23:13.292948+00:00",
+  "duration_seconds": 3784.92,
+  "resolution_width": 1920,
+  "resolution_height": 990,
+  "frame_rate": 24.0,
+  "video_codec": "vp8",
+  "audio_codec": "vorbis",
+  "audio_present": true,
+  "audio_channels": 1,
+  "audio_sample_rate_hz": 44100,
+  "audio_duration_seconds": 3626.956,
+  "audio_video_duration_mismatch": true,
+  "audio_video_duration_delta_seconds": 157.96399999999994,
+  "container_format": "matroska,webm",
+  "file_size_bytes": 167980756,
+  "bitrate_kbps": 355.052,
+  "composite_layout": {
+    "layout_type": "dual_panel_plus_webcam_strip",
+    "webcam_strip_position": "bottom",
+    "screenshare_panel_count": 2,
+    "notes": "Green vertical bar visible on right edge throughout — green screen background artifact, excluded from screenshare detection."
+  },
+  "screenshare_visible": true,
+  "screenshare_platform": "unknown",
+  "participants": [],
+  "warnings": [
+    "Audio/video duration mismatch: video=3784.9s, audio=3627.0s, delta=158.0s"
+  ]
+}

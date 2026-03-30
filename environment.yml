@@ -1,3 +1,7 @@
+# CornellNTO environment
+# Known issue: `conda run -n CornellNTO` may resolve to a different active env.
+# Use the full Python path to run scripts reliably:
+#   /path/to/anaconda3/envs/CornellNTO/bin/python src/process_video.py ...
 name: CornellNTO
 channels:
   - conda-forge
@@ -13,6 +17,9 @@ dependencies:
 
   - pip:
       # PyTorch (MPS-compatible macOS build — standard PyPI wheel includes MPS)
+      # Note: conda's llvmlite/numba constraint pins torch to 2.2.2 on this system.
+      # pyannote.audio 3.4 and transformers prefer torch>=2.4; Whisper runs on CPU as workaround.
+      # In production, decouple numba from the PyTorch environment or use torch>=2.4.
       - torch
       - torchaudio
       - torchvision
@@ -33,7 +40,8 @@ dependencies:
       - safetensors
 
       # Core scientific / data stack
-      - numpy
+      # numpy pinned <2 for torch 2.2.x compatibility (sparse MPS ops incompatibility)
+      - "numpy<2"
       - scipy
       - pandas
       - scikit-learn
