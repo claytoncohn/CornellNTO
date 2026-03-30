@@ -298,7 +298,7 @@ Minimum confidence threshold (`EMOTION_MIN_CONFIDENCE`, default 0.50) gates whic
 
 **Requirement:** The task specification asks for speaker labels such as `Tutor_1`, `Student_1`, `Student_2`. The Instructions additionally specify that roles should be mapped "only where there is enough evidence to support the mapping" and that neutral labels should be preserved when confidence is low.
 
-**Decision:** Role mapping was deliberately deferred. All utterances carry `speaker_role: "unknown"` and `speaker_role_confidence: "low"` in the final outputs.
+**Decision:** Role mapping was deliberately deferred. By this point (after Step 12), speaker *identity* is solved — utterances carry consistent `Speaker_N` labels that distinguish who is speaking. What remains unknown is speaker *role*: which `Speaker_N` is the tutor and which are students. All utterances carry `speaker_role: "unknown"` and `speaker_role_confidence: "low"` in the final outputs.
 
 **Why:** The two most reliable signals for role assignment are:
 1. Webcam tile labels (e.g., "Eli (Student)") visible in the composite frame
@@ -310,7 +310,7 @@ OCR of webcam tile labels was attempted (Stage 6 reports 119 participant name de
 
 **Why this is the right call:** An incorrect Tutor/Student label is worse than an honest `unknown` label. The prompt explicitly asks for conservative inference, and the evidence base is insufficient to make reliable role assignments in this prototype.
 
-**Note — feasibility given completed diarization:** Now that diarization is working and produces consistent `Speaker_N` labels, the diarization side of the problem is solved. The only remaining blocker is reliable participant name extraction. If OCR targeting were improved (precise tile-region cropping + fuzzy matching against a known-participants list), role assignment would be straightforward:
+**Note — feasibility given completed diarization:** Now that diarization is working (see Step 12) and produces consistent `Speaker_N` labels, the diarization side of the problem is solved. The only remaining blocker is reliable participant name extraction. If OCR targeting were improved (precise tile-region cropping + fuzzy matching against a known-participants list), role assignment would be straightforward:
 
 1. **Extract participant names and roles from webcam tiles** — run Tesseract on individually cropped tile regions (tile geometry is deterministic in the composite layout) and fuzzy-match each result against the known participant list (`Tutor Rivers`, `Eli`, `Sebastian`, `Salvador`) to yield a mapping of `tile_position → {name, role}`.
 2. **Determine the active speaker per diarization turn** — for each `Speaker_N` turn, find the frame(s) sampled during that turn window and identify which webcam tile has the highest motion/visual activity (or simply which tile is highlighted, if the platform marks the active speaker).
