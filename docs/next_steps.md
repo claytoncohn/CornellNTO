@@ -121,9 +121,9 @@ This section documents known failures, gaps, and constraints in the current prot
 
 **Limitation:** Face mesh detection (for head nods, facial expressions) returns 0 detections. Lowering `min_detection_confidence` to 0.1 and applying 2× upscaling during debugging also produced 0 results. Cause: virtual backgrounds mask facial landmarks and VP8 compression degrades the low-resolution webcam tiles.
 
-**Impact:** `nonverbal_events` contain only `hand_raise` events. Facial gesture signals (head nods, eyebrow raises, expressions) are unavailable.
+**Additional limitation — simultaneous nonverbal events not fully captured:** The task specification requires that simultaneous actions across multiple participants be reported. Overlapping *speech* is handled correctly via the `overlaps_with` arrays in the transcript. However, simultaneous *nonverbal events* are not: `mp_pose.Pose` is a single-person model — it processes the entire webcam strip as one image and returns exactly one skeleton per frame. If two participants raise their hands at the same time, at most one `hand_raise` event is emitted for that timestamp. `FaceMesh` does support multiple faces per frame (`multi_face_landmarks`), but it returns 0 detections due to the compression/virtual background issues noted above.
 
-**Resolution path:** Use a face detection model specifically designed for low-resolution or partially-occluded faces (e.g., RetinaFace, SCRFD) before feeding to mediapipe.
+**Resolution path for simultaneous nonverbals:** Segment the webcam strip into individual participant tiles before running pose detection (one `Pose` call per tile per frame). This would allow one event per participant per frame, correctly capturing simultaneous actions. Use a face detection model specifically designed for low-resolution or partially-occluded faces (e.g., RetinaFace, SCRFD) before feeding to mediapipe.
 
 ---
 
