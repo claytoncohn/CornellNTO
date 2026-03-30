@@ -73,7 +73,7 @@ conda activate CornellNTO
 
 **Video 1 (1711656206762) specifics:**
 - 4 participants visible: `Tutor Tutor (Tutor)` (no name listed), `Sebastian (Student)`, `Eli (Student)`, `Salvador (Student)`
-- At 10:51: screen share is active digital math learning platform (Desmos-style activity builder) showing a grocery algebra problem; student work/avatars visible inside the platform in real time
+- At 10:51: screen share is active via a digital math learning platform (Desmos-style activity builder) showing a grocery algebra problem; student work/avatars visible inside the platform in real time
 
 **Video 2 (1712170523563) specifics:**
 - 4 unique participants visible across 6 webcam tiles: `Tutor Rivers (Tutor)`, `Tutor Rivers (Tutor)` [black screen], `Eli (Student)`, `Sebastian (Student)`, `Salvador (Student)`, `Eli (Student)` [black screen] — the tutor and Eli each occupy two tiles (one active, one inactive/black)
