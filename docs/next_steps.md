@@ -156,12 +156,7 @@ This section documents known failures, gaps, and constraints in the current prot
 
 ---
 
-### 4.8 ~~Composite Layout Not Classified~~ — Resolved
-**Status:** `composite_layout.layout_type` is correctly populated in both outputs: `screenshare_plus_webcam_strip` (Video 1) and `dual_panel_plus_webcam_strip` (Video 2). Stage 6 visual analysis classifies the layout. This limitation no longer applies.
-
----
-
-### 4.9 Screenshare Confidence Score is Fixed
+### 4.8 Screenshare Confidence Score is Fixed
 **What observed:** All screenshare segments and events have `confidence: 0.7`. This is a fixed placeholder, not a computed score.
 
 **Root cause:** The brightness-threshold heuristic does not produce a calibrated confidence value; 0.7 was chosen as a reasonable default indicating "heuristic detection, not verified."
@@ -170,7 +165,7 @@ This section documents known failures, gaps, and constraints in the current prot
 
 ---
 
-### 4.10 MPS Acceleration Not Used (Whisper on CPU)
+### 4.9 MPS Acceleration Not Used (Whisper on CPU)
 **What observed:** Despite the system having an Apple M2 Max with MPS support and `DEVICE=mps` in `.env`, Whisper runs on CPU.
 
 **Root cause:** `torch 2.2.2` does not support the sparse tensor operations required by Whisper's attention mechanism on MPS. This was fixed by forcing `whisper_device = "cpu"`.
