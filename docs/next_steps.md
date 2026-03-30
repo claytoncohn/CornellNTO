@@ -9,7 +9,7 @@ This document covers what would be needed to take this pipeline from prototype t
 ### 1.1 Upgrade Speaker Diarization
 - **Current state:** Speaker diarization is implemented using MFCC + agglomerative clustering (librosa + sklearn) and produces plausible speaker counts (4 for video 1, 5 for video 2). All utterances receive a `Speaker_N` label.
 - **Limitation:** MFCC-based clustering is not speaker-discriminative across sessions — speaker IDs are not persistent or consistent between runs on different videos. It also conflates speakers who have similar vocal timbre.
-- **Upgrade path:** When `torch>=2.4` becomes available (requires resolving the numba/llvmlite macOS constraint), replace with pyannote.audio 3.x or resemblyzer for proper neural speaker embeddings. Alternatively, use a separate conda environment with no numba dependency.
+- **Upgrade path:** `torch>=2.4` is already released and stable. The blocker is the numba/llvmlite macOS constraint in this environment that pins torch to 2.2.2. Resolve by decoupling numba from the PyTorch environment (separate conda env or Docker), then replace with pyannote.audio 3.x or resemblyzer for proper neural speaker embeddings.
 
 ### 1.2 Improve Screenshare Platform Detection (OCR)
 - **Issue:** Tesseract OCR is currently returning `None` for platform name on sampled frames. Likely causes: low-contrast text, small font size at 1fps sampling, or the platform logo not being captured at the sampled timestamp.
@@ -92,9 +92,9 @@ This section documents known failures, gaps, and constraints in the current prot
 
 **Limitation:** MFCC-based clustering is less accurate than neural speaker embedding models (pyannote.audio, resemblyzer). Speaker IDs are not consistent across sessions and can conflate speakers with similar vocal characteristics.
 
-**Root cause of original blocker:** pyannote.audio 3.x requires `torch>=2.4`; max available on macOS via pip is `2.2.2` (numba/llvmlite constraint). MFCC approach was chosen as a functional, fully-offline baseline.
+**Root cause of original blocker:** pyannote.audio 3.x requires `torch>=2.4`; the numba/llvmlite constraint in this environment pins torch to `2.2.2`. Note: `torch>=2.4` is already released and stable — the constraint is purely environmental, not an upstream availability issue. MFCC approach was chosen as a functional, fully-offline baseline.
 
-**Resolution path:** When `torch>=2.4` is available, replace clustering with pyannote.audio for neural-quality diarization.
+**Resolution path:** Decouple numba from the PyTorch environment (separate conda env or Docker), then replace clustering with pyannote.audio for neural-quality diarization.
 
 ---
 

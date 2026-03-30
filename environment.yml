@@ -18,8 +18,8 @@ dependencies:
   - pip:
       # PyTorch (MPS-compatible macOS build — standard PyPI wheel includes MPS)
       # Note: conda's llvmlite/numba constraint pins torch to 2.2.2 on this system.
-      # pyannote.audio 3.4 and transformers prefer torch>=2.4; Whisper runs on CPU as workaround.
-      # In production, decouple numba from the PyTorch environment or use torch>=2.4.
+      # pyannote.audio 3.4 and transformers prefer torch>=2.4 (released and stable; blocked here by numba/llvmlite).
+      # In production, decouple numba from the PyTorch environment to lift the torch version constraint.
       - torch
       - torchaudio
       - torchvision
