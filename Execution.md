@@ -82,7 +82,7 @@ conda activate CornellNTO
 - Platform identified as **Saga** (logo visible bottom-right); math problem with student annotation visible
 - At 2:21: Tutor Rivers appears.
 - By 14:22: the three students, Eli, Sebastian, and Salvador, are all online and visible.
-- **Audio/video duration mismatch:** audio ends at 01:00:27, video continues to 01:03:05 — a ~2.5 min gap. Transcription output must flag this; no speech data will be available for the final 2.5 minutes of video.
+- **Audio/video duration mismatch:** audio ends at 01:00:27, video continues to 01:03:05 — a ~2.6 min gap. Transcription output must flag this; no speech data will be available for the final 2.6 minutes of video.
 
 **Why:** Frame inspection before implementation ensures pipeline design is grounded in actual signal availability rather than assumptions. The visible participant name labels significantly simplify role mapping. The audio mismatch in video 2 is a known limitation that must be explicitly represented in outputs.
 
@@ -105,7 +105,7 @@ conda activate CornellNTO
 2. `extract_metadata` — build `metadata.json` artifact from ffprobe data
 3. `extract_audio` — export normalized mono 16kHz WAV via ffmpeg
 4. `transcribe_audio` — Whisper ASR with per-segment timestamps
-5. `diarize_speakers` — pyannote.audio 3.1 diarization (original design; superseded by MFCC clustering in Step 12)
+5. `diarize_speakers` — pyannote.audio 3.4 diarization (original design; superseded by MFCC clustering in Step 12)
 6. `analyze_visual` — frame sampling, OCR participant labels, mediapipe pose/face mesh
 7. `detect_screenshare` — brightness-variance heuristic on upper panel; OCR platform ID
 8. `merge_signals` — combine all signals into transcript artifact; overlap detection
@@ -115,7 +115,7 @@ conda activate CornellNTO
 - All stage toggles (`ENABLE_DIARIZATION`, `ENABLE_NONVERBAL`, etc.) read from `.env`
 - Each stage fails gracefully and logs warnings rather than crashing the pipeline
 - `--skip-visual` CLI flag allows fast audio-only runs
-- Screenshare detection uses pixel brightness on the upper 72% of the frame, excluding the rightmost 5% (green screen artifact)
+- Screenshare detection uses pixel brightness on the upper 72% of the frame, excluding the rightmost 7% (green screen artifact)
 - Speaker assignment uses maximum-overlap matching between ASR segments and diarization turns
 - Overlapping utterances detected post-merge and cross-referenced via `overlaps_with` arrays
 
@@ -390,7 +390,7 @@ OCR of webcam tile labels was attempted (Stage 6 reports 119 participant name de
 | No inverted intervals | PASS | PASS |
 | End times within audio bounds | PASS | PASS |
 | Speaker diarization | PASS — 4 speakers | PASS — 5 speakers |
-| Nonverbal events | PASS — 134 events | PASS — 296 events |
+| Nonverbal events | PASS — 148 events | PASS — 348 events |
 | Emotion events | PASS — 110 (12.8%) | PASS — 96 (8.6%) |
 | Screenshare segments | PASS — 1 segment | PASS — 2 segments |
 
