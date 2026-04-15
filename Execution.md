@@ -24,7 +24,7 @@ conda activate CornellNTO
 - `DEVICE=mps` is set in `.env` to take advantage of Apple M2 Max hardware
 
 **Caveats:**
-- The environment includes more packages than will likely be used in this prototype (e.g., `speechbrain`, `mediapipe`, `xlsxwriter`, `jupyterlab`). This was intentional for the prototype phase to avoid repeated reinstalls during development.
+- The environment includes more packages than will likely be used in this prototype (e.g., `speechbrain`, `xlsxwriter`, `jupyterlab`). This was intentional for the prototype phase to avoid repeated reinstalls during development.
 - In a real-world production setting, unused packages would be audited and removed prior to deployment to reduce attack surface, image size, and dependency conflict risk.
 
 ---
@@ -70,6 +70,7 @@ conda activate CornellNTO
 
 - Both videos use the same general layout: a screenshare/work panel occupying the upper ~70% of the frame, with a participant webcam strip along the bottom. Participant names and roles are visible as text labels on each webcam tile — a significant signal for role identification.
 - A green vertical bar appears on the right edge of both videos throughout; this is a green screen background artifact from one or more participants and should be excluded from screenshare detection logic.
+-   Correction: The green bar is not constant and only comes up while scrolling through, likely due to graphics rendering.
 
 **Video 1 (1711656206762) specifics:**
 - 4 participants visible: `Tutor Tutor (Tutor)` (no name listed), `Sebastian (Student)`, `Eli (Student)`, `Salvador (Student)`
@@ -116,6 +117,7 @@ conda activate CornellNTO
 - Each stage fails gracefully and logs warnings rather than crashing the pipeline
 - `--skip-visual` CLI flag allows fast audio-only runs
 - Screenshare detection uses pixel brightness on the upper 72% of the frame, excluding the rightmost 7% (green screen artifact)
+-   Correction: green bar not constant width across videos, but it does occur outside the screenshare
 - Speaker assignment uses maximum-overlap matching between ASR segments and diarization turns
 - Overlapping utterances detected post-merge and cross-referenced via `overlaps_with` arrays
 
@@ -153,6 +155,7 @@ conda activate CornellNTO
 - Frames saved to `tmp/<video_id>_frames/frame_XXXXXX.png`
 - Loaded with PIL and converted RGB→BGR for OpenCV compatibility
 - Green-bar exclusion (`[:, :int(width*0.93), :]`) applied to screenshare brightness panel
+-   Correction: green bar not constant width across videos
 
 **Why:** VP8/WebM requires a compiled ffmpeg with the libvpx decoder; OpenCV on this system lacks that codec. ffmpeg (installed via conda) handles it correctly.
 
@@ -228,7 +231,7 @@ conda activate CornellNTO
 - Transcript spot-check at utterances 0, 100, 300/500, and last
 
 **Schema fix applied:**
-- `asr_confidence` in `docs/schema_transcript.json` had `minimum: 0.0` and `maximum: 1.0` constraints. Whisper returns `avg_logprob` (a log-probability), which is always negative. The constraints were removed and the description updated to clarify the value is a log-probability. Both transcripts pass schema validation after this fix.
+- `asr_confidence` in `docs/schema_transcript.json` had `minimum: 0.0` and `maximum: 1.0` constraints. Whisper returns `avg_logprob` (a log-probability), which is always non-positive. The constraints were removed and the description updated to clarify the value is a log-probability. Both transcripts pass schema validation after this fix.
 
 **Results:** All four files pass schema validation. No temporal ordering or bounds violations found.
 
