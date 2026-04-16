@@ -70,7 +70,7 @@ conda activate CornellNTO
 
 - Both videos use the same general layout: a screenshare/work panel occupying the upper ~70% of the frame, with a participant webcam strip along the bottom. Participant names and roles are visible as text labels on each webcam tile — a significant signal for role identification.
 - A green vertical bar appears on the right edge of both videos throughout; this is a green screen background artifact from one or more participants and should be excluded from screenshare detection logic.
--   Correction: The green bar is not constant and only comes up while scrolling through, likely due to graphics rendering.
+-   Correction (4/15/26): The green bar is not constant and only comes up while scrolling through, likely due to graphics rendering.
 
 **Video 1 (1711656206762) specifics:**
 - 4 participants visible: `Tutor Tutor (Tutor)` (no name listed), `Sebastian (Student)`, `Eli (Student)`, `Salvador (Student)`
@@ -117,7 +117,7 @@ conda activate CornellNTO
 - Each stage fails gracefully and logs warnings rather than crashing the pipeline
 - `--skip-visual` CLI flag allows fast audio-only runs
 - Screenshare detection uses pixel brightness on the upper 72% of the frame, excluding the rightmost 7% (green screen artifact)
--   Correction: green bar not constant width across videos, but it does occur outside the screenshare
+-   Correction (4/15/26): green bar not constant width across videos, but it does occur outside the screenshare
 - Speaker assignment uses maximum-overlap matching between ASR segments and diarization turns
 - Overlapping utterances detected post-merge and cross-referenced via `overlaps_with` arrays
 
@@ -138,7 +138,8 @@ conda activate CornellNTO
 
 **Issues encountered and fixed:**
 - `str | None` type annotation raised `TypeError` at module load on Python 3.10 — fixed by adding `from __future__ import annotations` at the top of `process_video.py`
-- `conda run -n CornellNTO` resolved to the wrong active environment (`C2STEM_Agent`; my dissertation research environment) — switched to full Python binary path for all invocations
+- `conda run -n CornellNTO` resolved to the wrong active environment (`C2STEM_Agent`; my dissertation research environment).
+-   Correction (4/16/26): switched to CornellNTO env afterwards.
 - Whisper raised a sparse tensor MPS error — forced `whisper_device = "cpu"` regardless of `DEVICE` setting; documented in log
 - pyannote.audio requires `torch>=2.4` but `2.2.2` is installed — wrapped diarization in try/except; pipeline proceeds with `Speaker_unknown` labels
 
@@ -155,7 +156,7 @@ conda activate CornellNTO
 - Frames saved to `tmp/<video_id>_frames/frame_XXXXXX.png`
 - Loaded with PIL and converted RGB→BGR for OpenCV compatibility
 - Green-bar exclusion (`[:, :int(width*0.93), :]`) applied to screenshare brightness panel
--   Correction: green bar not constant width across videos
+-   Correction (4/15/26): green bar not constant width across videos
 
 **Why:** VP8/WebM requires a compiled ffmpeg with the libvpx decoder; OpenCV on this system lacks that codec. ffmpeg (installed via conda) handles it correctly.
 
